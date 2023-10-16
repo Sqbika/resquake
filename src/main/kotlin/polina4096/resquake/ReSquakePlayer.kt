@@ -85,7 +85,7 @@ object ReSquakePlayer {
             player.increaseTravelMotionStats(player.x - dX, player.y - dY, player.z - dZ)
 
             // Swing arms and legs
-            player.updateLimbs(player is Flutterer)
+            player.updateLimbs(player, player is Flutterer)
             return true
         }
 
@@ -124,7 +124,7 @@ object ReSquakePlayer {
     private const val QUAKE_SNEAKING_SPEED_MULTIPLIER = 1.10
     private fun PlayerEntity.getSlipperiness(): Double {
         if (this.isOnGround) {
-            val groundPos = BlockPos.ofFloored(this.x, this.boundingBox.minY - 1, this.z)
+            val groundPos = BlockPos(this.x, this.boundingBox.minY - 1, this.z)
             return this.world.getBlockState(groundPos).block.slipperiness.toDouble()
         }
 
@@ -158,9 +158,9 @@ object ReSquakePlayer {
 
         // Sharking
         if (this.isTouchingWater && !flying) {
-            if (ReSquakeMod.config.sharkingEnabled)
-                 return this.travelWaterQuake(wishspeed, wishdir.first, wishdir.second, sidemove, forwardmove)
-            else return false // Use default minecraft water movement if disabled (https://github.com/polina4096/resquake/issues/4)
+            return if (ReSquakeMod.config.sharkingEnabled)
+                this.travelWaterQuake(wishspeed, wishdir.first, wishdir.second, sidemove, forwardmove)
+            else false // Use default minecraft water movement if disabled (https://github.com/polina4096/resquake/issues/4)
         } else swimming = false
 
         // Ground movement
